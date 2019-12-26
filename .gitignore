@@ -1,0 +1,10 @@
+# Built object files
+*.o
+
+# Static library files
+*.a
+
+# Exclude built binaries
+daemon/daemon
+demo/*
+!demo/*.*
