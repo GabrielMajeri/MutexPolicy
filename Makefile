@@ -6,8 +6,11 @@ LDFLAGS += -lzmq
 
 .PHONY: run clean
 
-run: daemon/daemon demo/simple
-	./daemon/daemon && ./demo/simple
+run-daemon: daemon/daemon
+	./$<
+
+run-demo: demo/simple
+	./$<
 
 clean:
 	-rm */*.o
