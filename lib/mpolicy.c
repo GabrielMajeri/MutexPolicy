@@ -2,9 +2,10 @@
 #include <ipc.h>
 
 #include <errno.h>
+#include <stdio.h>
 
 mutex_t mutex_open(const char* name) {
-    ipc_test();
+    printf("Mutex open %s\n", name);
 
     // ENOSYS = Function not implemented
     errno = ENOSYS;
@@ -13,5 +14,7 @@ mutex_t mutex_open(const char* name) {
 }
 
 void mutex_close(mutex_t mutex) {
+    printf("Mutex close %d\n", mutex);
+
     errno = ENOSYS;
 }
