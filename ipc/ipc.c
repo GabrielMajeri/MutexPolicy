@@ -2,7 +2,12 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 #include <zmq.h>
+
+
+#define MAX_MSG_LEN 256
+
 
 struct ipc_context_t {
     void* context;
@@ -36,6 +41,12 @@ static ipc_context init_context(int socket_type) {
 static const char IPC_ADDRESS[] = "ipc:///tmp/mutex-policy.ipc";
 
 ipc_context ipc_bind(void) {
+    // Router socket attaches an envelope which identifies the sender
+    // of each message. This way it's able to reply back to each client
+    // individually.
+    //
+    // See the documentation for an extended explanation on how it works:
+    // http://zguide.zeromq.org/page:chapter3#The-Extended-Reply-Envelope
     ipc_context ctx = init_context(ZMQ_ROUTER);
     if (!ctx) {
         return NULL;
@@ -89,4 +100,33 @@ void ipc_close(ipc_context ctx) {
 
     // Finally, release the memory
     free(ctx);
+}
+
+int ipc_send(ipc_context ctx, const char* message) {
+    return zmq_send_const(ctx->socket, message, strlen(message), 0);
+}
+
+int ipc_reply(ipc_context ctx, const char* identity, const char* message) {
+    int rc;
+    rc = zmq_send_const(ctx->socket, identity, strlen(identity), ZMQ_MORE);
+    if (rc) {
+        return rc;
+    }
+    rc = zmq_send_const(ctx->socket, "", 0, ZMQ_MORE);
+    if (rc) {
+        return rc;
+    }
+    rc = zmq_send_const(ctx->socket, message, strlen(message), 0);
+    return rc;
+}
+
+char* ipc_receive(ipc_context ctx) {
+    char buf[MAX_MSG_LEN];
+    int rc = zmq_recv(ctx->socket, buf, MAX_MSG_LEN, 0);
+    if (rc == -1) {
+        return NULL;
+    } else {
+        buf[rc] = 0;
+        return strdup(buf);
+    }
 }

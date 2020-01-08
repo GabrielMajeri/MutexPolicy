@@ -24,4 +24,21 @@ ipc_context ipc_connect(void);
  */
 void ipc_close(ipc_context context);
 
+/**
+ * Sends a message from a client process to the daemon.
+ */
+int ipc_send(ipc_context ctx, const char* message);
+
+/**
+ * Sends a message from the daemon to a specific client.
+ */
+int ipc_reply(ipc_context ctx, const char* identity, const char* message);
+
+/**
+ * Receives a message from the socket.
+ *
+ * It is the caller's responsibility to `free` the returned string.
+ */
+char* ipc_receive(ipc_context ctx);
+
 #endif
