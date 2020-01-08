@@ -22,8 +22,8 @@ clean:
 ipc/libipc.a: ipc/ipc.o
 	$(AR) crs $@ $^
 
-daemon/%.o: daemon/%.c
-	$(CC) $< $(CFLAGS) -I ipc -c -o $@
+daemon/%.o: daemon/%.cpp
+	$(CXX) $< $(CFLAGS) -I ipc -c -o $@
 
 daemon/daemon: daemon/main.o ipc/libipc.a
 	$(CC) $^ $(CFLAGS) $(LDFLAGS) -o $@

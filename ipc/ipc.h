@@ -1,6 +1,10 @@
 #ifndef IPC_H
 #define IPC_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct ipc_context_t* ipc_context;
 
 /**
@@ -40,5 +44,9 @@ int ipc_reply(ipc_context ctx, const char* identity, const char* message);
  * It is the caller's responsibility to `free` the returned string.
  */
 char* ipc_receive(ipc_context ctx);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
