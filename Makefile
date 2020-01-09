@@ -26,10 +26,10 @@ daemon/%.o: daemon/%.cpp
 	$(CXX) $< $(CFLAGS) -I ipc -c -o $@
 
 daemon/daemon: daemon/main.o ipc/libipc.a
-	$(CC) $^ $(CFLAGS) $(LDFLAGS) -o $@
+	$(CXX) $^ $(CFLAGS) $(LDFLAGS) -o $@
 
 lib/%.o: lib/%.c
-	$(CC) $< $(CFLAGS) -I ipc -c -o $@
+	$(CXX) $< $(CFLAGS) -I ipc -c -o $@
 
 lib/libmpolicy.a: lib/mpolicy.o ipc/libipc.a
 	$(AR) crs $@ $^
