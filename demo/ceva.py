@@ -13,7 +13,7 @@ context = zmq.Context()
 #  Socket to talk to server
 print("Connecting to hello world server…")
 socket = context.socket(zmq.REQ)
-socket.connect("tcp://10.11.192.134:5555")
+socket.connect("ipc:///tmp/ceva")
 
 #  Do 10 requests, waiting each time for a response
 print("Sending request.")

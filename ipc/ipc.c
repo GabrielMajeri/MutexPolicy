@@ -38,7 +38,7 @@ static ipc_context init_context(int socket_type) {
     return ctx;
 }
 
-static const char IPC_ADDRESS[] = "ipc:///tmp/mutex-policy.ipc";
+static const char IPC_ADDRESS[] = "tcp://*:5555";
 
 ipc_context ipc_bind(void) {
     // Router socket attaches an envelope which identifies the sender
@@ -102,23 +102,12 @@ void ipc_close(ipc_context ctx) {
     free(ctx);
 }
 
-int ipc_send(ipc_context ctx, const char* message) {
-    return zmq_send_const(ctx->socket, message, strlen(message), 0);
+int ipc_send(ipc_context ctx, const char* message, int flags) {
+
+    return zmq_send_const(ctx->socket, message, strlen(message), flags?ZMQ_SNDMORE:ZMQ_NOBLOCK);
 }
 
-int ipc_reply(ipc_context ctx, const char* identity, const char* message) {
-    int rc;
-    rc = zmq_send_const(ctx->socket, identity, strlen(identity), ZMQ_MORE);
-    if (rc) {
-        return rc;
-    }
-    rc = zmq_send_const(ctx->socket, "", 0, ZMQ_MORE);
-    if (rc) {
-        return rc;
-    }
-    rc = zmq_send_const(ctx->socket, message, strlen(message), 0);
-    return rc;
-}
+
 
 char* ipc_receive(ipc_context ctx) {
     char buf[MAX_MSG_LEN];

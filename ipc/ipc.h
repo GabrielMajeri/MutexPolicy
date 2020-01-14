@@ -31,12 +31,7 @@ void ipc_close(ipc_context context);
 /**
  * Sends a message from a client process to the daemon.
  */
-int ipc_send(ipc_context ctx, const char* message);
-
-/**
- * Sends a message from the daemon to a specific client.
- */
-int ipc_reply(ipc_context ctx, const char* identity, const char* message);
+int ipc_send(ipc_context ctx, const char* message, int flags);
 
 /**
  * Receives a message from the socket.

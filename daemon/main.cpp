@@ -15,6 +15,7 @@
 #include <bits/stdc++.h>
 
 #include "ipc.h"
+#include <zmq.hpp>
 
 #define NU_MUTEX "nu exista bo$$"
 
@@ -29,6 +30,21 @@ struct my_mutex{
 map<string, my_mutex> mutecsi;
 
 int main() {
+	/*
+	zmq::context_t context(1);
+	zmq::socket_t broker(context, ZMQ_ROUTER);
+
+	broker.bind("tcp://*:5555");
+
+	std::string identity = broker.;
+	s_recv(broker);
+	s_recv(broker);
+
+	s_sendmore(broker, identity);
+	s_sendmore(broker, "");
+	s_send(broker, "OK nu stiu");
+	*/
+
     printf("Hello from daemon!\n");
 
     ipc_context ctx = ipc_bind();
@@ -43,58 +59,68 @@ int main() {
 
 		string nume_mutex = msg+1;
 
+		cout << "Toni e in pc meu " << nume_client << endl;
+
 		my_mutex &m = mutecsi[nume_mutex];
 
 		if(msg[0] == 'O') {
 			//deschid mutex idk
 			//sa verific daca nu exista deja in vecotr
+			cout << "Toni incearca sa faca Open" << endl;
 			if(m.procese.count(nume_client) > 0){
 				//Verifica daca ai fost de 2 ori acolo si nu ai dat close inainte adica acolo in acel proceso
-				ipc_reply(ctx, nume_client, "NU E OK");
+				cout << "A intrat acolo 74"<< endl;
+				while(ipc_send(ctx, "NU E OK", 0) == 0){
+					perror("N-am putut trimite");
+				}
 			}
-			else{
+			else{	
 				m.procese.insert(nume_client);
-				ipc_reply(ctx, nume_client, "OK");
+				ipc_send(ctx, nume_client, 1);
+				ipc_send(ctx, "", 1);
+				while(ipc_send(ctx, "OK", 0) == 0){
+					perror("Tot nu am putut trimite");
+				}
 			}
 		}
 		if(msg[0] == 'C') {
 			if(m.procese.count(nume_client) > 0){
 				m.procese.erase(nume_client);
-				ipc_reply(ctx, nume_client, "S-A STERS");
+				ipc_send(ctx, "S-A STERS", 0);
 			}
 			else{
-				ipc_reply(ctx, nume_client, "UITA-TE LA AL PACINO <3");
+				ipc_send(ctx, "UITA-TE LA AL PACINO <3", 0);
 			}
 		}
 		if(msg[0] == 'L') {
 			if(m.procese.count(nume_client)) { // >0
 				if(m.boss == NU_MUTEX){
-					ipc_reply(ctx, nume_client, "E AL TAU BO$$");
+					ipc_send(ctx, "E AL TAU BO$$", 0);
 				}					
 				else{
 					m.coada.push(nume_client);
 				}
 			}
 			else{
-				ipc_reply(ctx, nume_client, "UITA-TE LA AL PACINO <3");
+				ipc_send(ctx, "UITA-TE LA AL PACINO <3", 0);
 			}
 		}
 
 		if(msg[0] == 'U') {
 			if(m.procese.count(nume_client)) { // >0
 				if(m.boss == nume_client){
-					ipc_reply(ctx, nume_client, "AI DAT UNLOCK BO$$");
+					ipc_send(ctx, "AI DAT UNLOCK BO$$", 0);
 					string urmatorul_guy = m.coada.front();
 					m.coada.pop();
 					m.boss = urmatorul_guy;
-					ipc_reply(ctx, urmatorul_guy.c_str(), "E AL TAU BO$$");
+					ipc_send(ctx, "E AL TAU BO$$", 0);
 				}					
 				else{
-					ipc_reply(ctx, nume_client, "UITA-TE LA AL PACINO <3");	
+					ipc_send(ctx, "UITA-TE LA AL PACINO <3", 0);	
 				}
 			}
 			else{
-				ipc_reply(ctx, nume_client, "UITA-TE LA AL PACINO <3");
+				ipc_send(ctx, "UITA-TE LA AL PACINO <3", 0);
 			}
 		}
 
