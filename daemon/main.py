@@ -6,9 +6,9 @@ class Mutex:
 	def __init__(self):
 		self.actual_name = None
 		self.process = set()
-		self.coada = []
+		self.queue = []
 
-mutecsii = defaultdict(Mutex)
+mutexes = defaultdict(Mutex)
 
 def send_message(socket, address_client, message):
 	socket.send_multipart([
@@ -32,12 +32,12 @@ def main():
 
 		msg = msg.decode('UTF-8')
 
-		name_mutex = msg[1:]
+		mutex_name = msg[1:]
 
 		print("Toni incearca sa se conecteze pe laptopul meu")
 		print(address_client, msg)
 
-		my_mutex = mutecsii[name_mutex]
+		my_mutex = mutexes[mutex_name]
 
 		print(msg[0])
 
@@ -53,7 +53,7 @@ def main():
 				my_mutex.process.remove(address_client)
 				send_message(socket, address_client, b'S-a sters')
 				if not my_mutex.process:
-					del mutecsii[name_mutex]
+					del mutexes[mutex_name]
 
 			else:
 				send_message(socket, address_client, b'Nu exista adresa specificata')
@@ -63,17 +63,17 @@ def main():
 				if my_mutex.actual_name == None:
 					send_message(socket, address_client, b'Ai dat Lock')
 				else:
-					my_mutex.coada.append(addres_client)
+					my_mutex.queue.append(addres_client)
 			else:
 				send_message(socket, address_client, b'Nu exista adresa specificata')
 
 		elif msg[0] == 'U':	#Unlock
-			if address_client in mutecsii[name_mutex].process:
+			if address_client in mutexes[mutex_name].process:
 				if my_mutex.actual_name == address_client:
 					send_message(socket, address_client, b'Ai dat Unlock')
 
-					if my_mutex.coada:
-						next_guy = my_mutex.coada.pop(0)
+					if my_mutex.queue:
+						next_guy = my_mutex.queue.pop(0)
 						my_mutex.actual_name = next_guy
 						send_message(socket, address_client, b'Ai dat Lock')
 					else:
