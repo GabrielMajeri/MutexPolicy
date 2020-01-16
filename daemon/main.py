@@ -120,7 +120,7 @@ def main():
 						next_guy, address_client = my_mutex.queue.pop(0)
 						my_mutex.owner_pid = next_guy
 
-						logging.info("Pid-ul %s a luat lock", owner_pid)
+						logging.info("Pid-ul %s a luat lock", my_mutex.owner_pid)
 
 						send_message(socket, address_client, b'Ok') # Ai dat lock
 					else:
