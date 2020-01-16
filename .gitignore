@@ -1,12 +1,5 @@
-# Built object files
-*.o
+# Python cache files
+__pycache__
 
-# Static library files
-*.a
-
-# Exclude built binaries
-daemon/daemon
-demo/*
-!demo/*.*
-
+# Exclude generated files
 /*.log
