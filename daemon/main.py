@@ -4,11 +4,13 @@ import zmq
 
 class Mutex:
 	def __init__(self):
-		self.actual_name = None
+		self.owner_pid = None
 		self.process = set()
 		self.queue = []
 
 mutexes = defaultdict(Mutex)
+
+pid_to_mutex = defaultdict(list)
 
 def send_message(socket, address_client, message):
 	socket.send_multipart([
@@ -32,52 +34,59 @@ def main():
 
 		msg = msg.decode('UTF-8')
 
-		mutex_name = msg[1:]
+		pid, command, mutex_name = msg.split()
+
+		#mutex_name = msg[1:]
 
 		print("Toni incearca sa se conecteze pe laptopul meu")
 		print(address_client, msg)
 
 		my_mutex = mutexes[mutex_name]
 
-		print(msg[0])
+		print(command)
 
-		if msg[0] == 'O': #Open
-			if address_client in my_mutex.process:
-				send_message(socket, address_client, b'Nu este Ok')
+		if command == 'O': #Open
+			if mutex_name in pid_to_mutex[pid]:#address_client in my_mutex.process:
+				send_message(socket, address_client, b'Nu este Ok') #este in lista deja mutexul
 			else:
-				my_mutex.process.add(address_client)
+				pid_to_mutex[pid].append(mutex_name)
+				my_mutex.process.add(pid)
 				send_message(socket, address_client, b'Ok')
 
-		elif msg[0] == 'C':	#Close
-			if address_client in my_mutex.process:
-				my_mutex.process.remove(address_client)
-				send_message(socket, address_client, b'S-a sters')
+		elif command == 'C':	#Close
+			if mutex_name in pid_to_mutex[pid]:#address_client in my_mutex.process:
+				my_mutex.process.remove(pid)
+				del pid_to_mutex[pid]
+				send_message(socket, address_client, b'Ok') #s-a sters
 				if not my_mutex.process:
 					del mutexes[mutex_name]
 
 			else:
 				send_message(socket, address_client, b'Nu exista adresa specificata')
 
-		elif msg[0] == 'L':	#Lock
-			if address_client in my_mutex.process:
-				if my_mutex.actual_name == None:
+		elif command == 'L':	#Lock
+			print(pid_to_mutex[pid])
+			if mutex_name in pid_to_mutex[pid]:#address_client in my_mutex.process:
+				if my_mutex.owner_pid == None:
+					my_mutex.owner_pid = pid
 					send_message(socket, address_client, b'Ok') # Ai dat lock
 				else:
-					my_mutex.queue.append(address_client)
+					my_mutex.queue.append((pid, address_client))
 			else:
 				send_message(socket, address_client, b'Nu exista adresa specificata')
 
-		elif msg[0] == 'U':	#Unlock
-			if address_client in mutexes[mutex_name].process:
-				if my_mutex.actual_name == address_client:
+		elif command == 'U':	#Unlock
+			if mutex_name in pid_to_mutex[pid]:#address_client in mutexes[mutex_name].process:
+				print(my_mutex.owner_pid, pid)
+				if my_mutex.owner_pid == pid:
 					send_message(socket, address_client, b'Ok') # Ai dat lock
 
 					if my_mutex.queue:
-						next_guy = my_mutex.queue.pop(0)
-						my_mutex.actual_name = next_guy
+						next_guy, address_client = my_mutex.queue.pop(0)
+						my_mutex.owner_pid = next_guy
 						send_message(socket, address_client, b'Ok') # Ai dat lock
 					else:
-						my_mutex.actual_name = None
+						my_mutex.owner_pid = None
 				else:
 					send_message(socket, address_client, b'Nume client != nume actual')
 			else:
