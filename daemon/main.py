@@ -1,6 +1,6 @@
-import zmq
-
 from collections import defaultdict
+
+import zmq
 
 class Mutex:
 	def __init__(self):
@@ -61,21 +61,21 @@ def main():
 		elif msg[0] == 'L':	#Lock
 			if address_client in my_mutex.process:
 				if my_mutex.actual_name == None:
-					send_message(socket, address_client, b'Ai dat Lock')
+					send_message(socket, address_client, b'Ok') # Ai dat lock
 				else:
-					my_mutex.queue.append(addres_client)
+					my_mutex.queue.append(address_client)
 			else:
 				send_message(socket, address_client, b'Nu exista adresa specificata')
 
 		elif msg[0] == 'U':	#Unlock
 			if address_client in mutexes[mutex_name].process:
 				if my_mutex.actual_name == address_client:
-					send_message(socket, address_client, b'Ai dat Unlock')
+					send_message(socket, address_client, b'Ok') # Ai dat lock
 
 					if my_mutex.queue:
 						next_guy = my_mutex.queue.pop(0)
 						my_mutex.actual_name = next_guy
-						send_message(socket, address_client, b'Ai dat Lock')
+						send_message(socket, address_client, b'Ok') # Ai dat lock
 					else:
 						my_mutex.actual_name = None
 				else:
@@ -84,7 +84,7 @@ def main():
 				send_message(socket, address_client, b'Nu exista adresa specificata')
 
 		else:
-			print("Ce vrei de la viata mea!!!?!!?")
+			print("Comanda necunoscuta:", msg)
 			send_message(socket, address_client, b'Nu ai ales bine. Mai incearca')
 
 
