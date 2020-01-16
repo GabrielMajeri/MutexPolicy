@@ -1,5 +1,7 @@
-
+import logging
 import mpolicy
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(message)s')
 
 #  Socket to talk to server
 print("Connecting to hello world server...")
