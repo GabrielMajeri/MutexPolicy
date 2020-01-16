@@ -1,0 +1,14 @@
+2020-01-16 15:24:53,158 Hello from daemon
+2020-01-16 15:24:53,158 Daemon bound to IPC
+2020-01-16 15:24:55,335 Pid-ul 4860 cu comanda O si mutex nameul mutex1
+2020-01-16 15:24:55,335 Pid-ul 4860 a deschis mutexul mutex1
+2020-01-16 15:24:55,336 Pid-ul 4860 cu comanda L si mutex nameul mutex1
+2020-01-16 15:24:55,336 Pid-ul 4860 a dat lock la mutexul mutex1
+2020-01-16 15:24:55,336 Pid-ul 4860 cu comanda U si mutex nameul mutex1
+2020-01-16 15:24:55,337 Pid-ul 4860 a dat unlock
+2020-01-16 15:24:55,337 Pid-ul 4860 cu comanda L si mutex nameul mutex1
+2020-01-16 15:24:55,337 Pid-ul 4860 a dat lock la mutexul mutex1
+2020-01-16 15:24:55,338 Pid-ul 4860 cu comanda U si mutex nameul mutex1
+2020-01-16 15:24:55,338 Pid-ul 4860 a dat unlock
+2020-01-16 15:24:55,338 Pid-ul 4860 cu comanda C si mutex nameul mutex1
+2020-01-16 15:24:55,338 S-a sters mutexul mutex1
