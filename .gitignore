@@ -8,3 +8,5 @@
 daemon/daemon
 demo/*
 !demo/*.*
+
+/*.log
