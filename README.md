@@ -26,3 +26,10 @@ cd demo && python3 test.py
 ```
 
 The client library for communicating with the mutex is [included with the apps](demo/mpolicy.py).
+
+## Authors
+
+- [Antonia Biro](https://github.com/ToniBiro)
+- [Bogdan Gavril](https://github.com/bogdangvr)
+- [Bogdan Nițică](https://github.com/BogdanNitica99)
+- [Gabriel Majeri](https://github.com/GabrielMajeri)
