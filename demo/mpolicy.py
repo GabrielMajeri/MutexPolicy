@@ -1,6 +1,7 @@
 import os
 import zmq
 
+
 class MutexPolicy:
     def __init__(self, address="127.0.0.1"):
         "Connects to the mutex policy daemon running at the specified address"
@@ -31,6 +32,7 @@ class MutexPolicy:
         self.socket.send_string("list")
 
         return self.socket.recv_string()
+
 
 class Mutex:
     def __init__(self, name, socket):

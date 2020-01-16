@@ -3,7 +3,7 @@ import mpolicy
 
 mp = mpolicy.MutexPolicy()
 
-mtx = mp.open("mutex1")
+mtx = mp.open("mutex10")
 
 print("starting program...")
 
